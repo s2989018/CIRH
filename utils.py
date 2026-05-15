@@ -174,7 +174,7 @@ def calculate_map(qu_B, re_B, qu_L, re_L):
     num_query = qu_L.shape[0]
     map = 0
     for iter in range(num_query):
-        gnd = (np.dot(qu_L[iter, :], re_L.transpose()) > 0).astype(np.float32)
+        gnd = (np.dot(qu_L[iter, :], re_L.transpose()) > 0).astype(float)
         tsum = np.sum(gnd)
         if tsum == 0:
             continue
@@ -202,7 +202,7 @@ def calculate_top_map(qu_B, re_B, qu_L, re_L, topk):
     num_query = qu_L.shape[0]
     topkmap = 0
     for iter in range(num_query):
-        gnd = (np.dot(qu_L[iter, :], re_L.transpose()) > 0).astype(np.float32)
+        gnd = (np.dot(qu_L[iter, :], re_L.transpose()) > 0).astype(float)
         hamm = calculate_hamming(qu_B[iter, :], re_B)
         ind = np.argsort(hamm)
         gnd = gnd[ind]

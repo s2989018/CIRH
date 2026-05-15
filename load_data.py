@@ -32,23 +32,22 @@ class CustomDataSet(Dataset):
 
 
 def get_loader_flickr(batch_size):
-    path = './datasets/MIRFlickr/'
-
+    path = './datasets/MIRFlickr'
     # x: images   y:tags   L:labels
     train_set = sio.loadmat(path + 'mir_train.mat')
-    train_L = np.array(train_set['L_tr'], dtype=np.float)
-    train_x = np.array(train_set['I_tr'], dtype=np.float)
-    train_y = np.array(train_set['T_tr'], dtype=np.float)
+    train_L = np.array(train_set['L_tr'], dtype=float)
+    train_x = np.array(train_set['I_tr'], dtype=float)
+    train_y = np.array(train_set['T_tr'], dtype=float)
 
     test_set = sio.loadmat(path + 'mir_query.mat')
-    query_L = np.array(test_set['L_te'], dtype=np.float)
-    query_x = np.array(test_set['I_te'], dtype=np.float)
-    query_y = np.array(test_set['T_te'], dtype=np.float)
+    query_L = np.array(test_set['L_te'], dtype=float)
+    query_x = np.array(test_set['I_te'], dtype=float)
+    query_y = np.array(test_set['T_te'], dtype=float)
 
     db_set = sio.loadmat(path + 'mir_database.mat')
-    retrieval_L = np.array(db_set['L_db'], dtype=np.float)
-    retrieval_x = np.array(db_set['I_db'], dtype=np.float)
-    retrieval_y = np.array(db_set['T_db'], dtype=np.float)
+    retrieval_L = np.array(db_set['L_db'], dtype=float)
+    retrieval_x = np.array(db_set['I_db'], dtype=float)
+    retrieval_y = np.array(db_set['T_db'], dtype=float)
 
 
     imgs = {'train': train_x, 'query': query_x, 'database': retrieval_x}
@@ -71,19 +70,19 @@ def get_loader_nus(batch_size):
 
     # x: images   y:tags   L:labels
     train_set = sio.loadmat(path + 'nus_train.mat')
-    train_L = np.array(train_set['L_tr'], dtype=np.float)
-    train_x = np.array(train_set['I_tr'], dtype=np.float)
-    train_y = np.array(train_set['T_tr'], dtype=np.float)
+    train_L = np.array(train_set['L_tr'], dtype=float)
+    train_x = np.array(train_set['I_tr'], dtype=float)
+    train_y = np.array(train_set['T_tr'], dtype=float)
 
     test_set = sio.loadmat(path + 'nus_query.mat')
-    query_L = np.array(test_set['L_te'], dtype=np.float)
-    query_x = np.array(test_set['I_te'], dtype=np.float)
-    query_y = np.array(test_set['T_te'], dtype=np.float)
+    query_L = np.array(test_set['L_te'], dtype=float)
+    query_x = np.array(test_set['I_te'], dtype=float)
+    query_y = np.array(test_set['T_te'], dtype=float)
 
     db_set = sio.loadmat(path + 'nus_database.mat')
-    retrieval_L = np.array(db_set['L_db'], dtype=np.float)
-    retrieval_x = np.array(db_set['I_db'], dtype=np.float)
-    retrieval_y = np.array(db_set['T_db'], dtype=np.float)
+    retrieval_L = np.array(db_set['L_db'], dtype=float)
+    retrieval_x = np.array(db_set['I_db'], dtype=float)
+    retrieval_y = np.array(db_set['T_db'], dtype=float)
 
     imgs = {'train': train_x, 'query': query_x, 'database': retrieval_x}
     texts = {'train': train_y, 'query': query_y, 'database': retrieval_y}
@@ -105,19 +104,19 @@ def get_loader_coco(batch_size):
 
     # x: images   y:tags   L:labels
     train_set = sio.loadmat(path + 'COCO_train.mat')
-    train_L = np.array(train_set['L_tr'], dtype=np.float)
-    train_x = np.array(train_set['I_tr'], dtype=np.float)
-    train_y = np.array(train_set['T_tr'], dtype=np.float)
+    train_L = np.array(train_set['L_tr'], dtype=float)
+    train_x = np.array(train_set['I_tr'], dtype=float)
+    train_y = np.array(train_set['T_tr'], dtype=float)
 
     test_set = sio.loadmat(path + 'COCO_query.mat')
-    query_L = np.array(test_set['L_te'], dtype=np.float)
-    query_x = np.array(test_set['I_te'], dtype=np.float)
-    query_y = np.array(test_set['T_te'], dtype=np.float)
+    query_L = np.array(test_set['L_te'], dtype=float)
+    query_x = np.array(test_set['I_te'], dtype=float)
+    query_y = np.array(test_set['T_te'], dtype=float)
 
     db_set = h5py.File(path + 'COCO_database.mat', 'r', libver='latest', swmr=True)
-    retrieval_L = np.array(db_set['L_db'], dtype=np.float).T
-    retrieval_x = np.array(db_set['I_db'], dtype=np.float).T
-    retrieval_y = np.array(db_set['T_db'], dtype=np.float).T
+    retrieval_L = np.array(db_set['L_db'], dtype=float).T
+    retrieval_x = np.array(db_set['I_db'], dtype=float).T
+    retrieval_y = np.array(db_set['T_db'], dtype=float).T
     db_set.close()
 
     imgs = {'train': train_x, 'query': query_x, 'database': retrieval_x}

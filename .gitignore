@@ -1,0 +1,8 @@
+mirflickr/
+mirflickr25k_annotations_v080/
+datasets/
+datasets_original/
+venv/
+.DS_Store
+
+

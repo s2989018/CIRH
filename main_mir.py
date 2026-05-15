@@ -21,9 +21,16 @@ def param_list(log, config):
     log.info('--- a2:{}'.format(config.a2))
 
 def main(config):
+    # Set seeds
     torch.manual_seed(config.SEED)
-    torch.cuda.manual_seed_all(config.SEED)
-    torch.cuda.set_device(config.GPU_ID)
+
+    # Detect GPU safely
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if device.type == "cuda":
+        torch.cuda.manual_seed_all(config.SEED)
+
+    print("Using device:", device)
+
 
     logName = config.DATASET + '_' + str(config.HASH_BIT)
     log = logger(logName)
@@ -54,8 +61,16 @@ def main(config):
         log.info('mAP@50 I->T: %.3f, mAP@50 T->I: %.3f' % (MAP_I2T, MAP_T2I))
 
 if __name__ == '__main__':
+    def str2bool(v):
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ("yes", "true", "t", "1", "y"):
+            return True
+        if v.lower() in ("no", "false", "f", "0", "n"):
+            return False
+        raise argparse.ArgumentTypeError("Boolean value expected.")
     parser = argparse.ArgumentParser(description='Ours')
-    parser.add_argument('--TRAIN', default=False, help='train or test', type=bool)
+    parser.add_argument('--TRAIN', default=True, help='train or test', type=str2bool)
     parser.add_argument('--DATASET', default='MIRFlickr', help='MIRFlickr, NUSWIDE or COCO', type=str)
 
     parser.add_argument('--lambda1', default=10, type=float, help='10')
@@ -70,7 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('--a2', default=0.6, help='balance S1 and S2 (0.6)',type=float)
     parser.add_argument('--HASH_BIT', default=16, help='code length', type=int)
     parser.add_argument('--BATCH_SIZE', default=512, type=int)
-    parser.add_argument('--GPU_ID', default=3, type=int)
+    parser.add_argument('--GPU_ID', default=0 ,type=int)
     parser.add_argument('--SEED', default=1, type=int)  # Please choose a suitable random seed.
     parser.add_argument('--NUM_WORKERS', default=8, type=int)
     parser.add_argument('--EPOCH_INTERVAL', default=2, type=int)
