@@ -32,7 +32,7 @@ class CustomDataSet(Dataset):
 
 
 def get_loader_flickr(batch_size):
-    path = './datasets/MIRFlickr'
+    path = './datasets_tests/MIRFlickr'
     # x: images   y:tags   L:labels
     train_set = sio.loadmat(path + 'mir_train.mat')
     train_L = np.array(train_set['L_tr'], dtype=float)
