@@ -4,5 +4,10 @@ datasets/
 datasets_original/
 venv/
 .DS_Store
+coco_cirh
+mir_cirh
+nuswide_cirh
+
+
 
 
