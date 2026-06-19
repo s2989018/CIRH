@@ -7,6 +7,8 @@ from models import MyNet, Img_Net, Txt_Net
 from utils import compress, calculate_top_map, logger, p_topK, p_topK2
 import numpy as np
 import os.path as osp
+import time
+import os
 
 class PCIRH:
     def __init__(self, log, config):
@@ -155,10 +157,25 @@ class PCIRH:
     def performance_eval(self):
 
         self.log.info('--------------------Evaluation: mAP@50-------------------')
+        hash_start = time.time()
         self.imgnet.eval().cuda()
         self.txtnet.eval().cuda()
 
         re_BI, re_BT, re_L, qu_BI, qu_BT, qu_L = compress(self.database_loader, self.test_loader, self.imgnet, self.txtnet)
+        hash_time = time.time() - hash_start
+        self.log.info("Hash code generation time: %.2f seconds" % hash_time)
+
+        os.makedirs("./results", exist_ok=True)
+        np.savez(
+            f"./results/{self.config.DATASET}_{self.config.HASH_BIT}bits_CIRH_codes.npz",
+            re_BI=re_BI,
+            re_BT=re_BT,
+            re_L=re_L,
+            qu_BI=qu_BI,
+            qu_BT=qu_BT,
+            qu_L=qu_L,
+        )
+
 
         MAP_I2T = calculate_top_map(qu_B=qu_BI, re_B=re_BT, qu_L=qu_L, re_L=re_L, topk=50)
         MAP_T2I = calculate_top_map(qu_B=qu_BT, re_B=re_BI, qu_L=qu_L, re_L=re_L, topk=50)

@@ -2,6 +2,7 @@ from my_opt import *
 import argparse
 import torch
 from utils import logger
+import time
 
 def param_list(log, config):
     log.info('>>> Configs List <<<')
@@ -40,6 +41,7 @@ def main(config):
     best_it = best_ti = 0
 
     if config.TRAIN == True:
+        total_train_start = time.time()
         for epoch in range(config.NUM_EPOCH):
             coll_B, record_index = wxz.train_method(epoch)
             wxz.train_Hashfunc(coll_B, record_index, epoch)
@@ -54,6 +56,8 @@ def main(config):
                     wxz.save_checkpoints()
 
                 log.info('--------------------------------------------------------------------')
+        total_train_time = time.time() - total_train_start
+        log.info("Total training time: %.2f seconds" % total_train_time)
     else:
         ckp = config.DATASET + '_' + str(config.HASH_BIT)+'bits.pth'
         wxz.load_checkpoints(ckp)
