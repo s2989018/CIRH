@@ -2,6 +2,7 @@ from my_opt import *
 import argparse
 import torch
 from utils import logger
+import time
 
 def param_list(log, config):
     log.info('>>> Configs List <<<')
@@ -22,8 +23,13 @@ def param_list(log, config):
 
 def main(config):
     torch.manual_seed(config.SEED)
-    torch.cuda.manual_seed_all(config.SEED)
-    torch.cuda.set_device(config.GPU_ID)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    if device.type == "cuda":
+        torch.cuda.manual_seed_all(config.SEED)
+        torch.cuda.set_device(config.GPU_ID)
+
 
     logName = config.DATASET + '_' + str(config.HASH_BIT)
     log = logger(logName)
@@ -32,31 +38,55 @@ def main(config):
     wxz = PCIRH(log, config)
     best_it = best_ti = 0
 
-    if config.TRAIN == True:
+    if config.TRAIN:
+        total_train_start = time.time()
+
         for epoch in range(config.NUM_EPOCH):
             coll_B, record_index = wxz.train_method(epoch)
             wxz.train_Hashfunc(coll_B, record_index, epoch)
 
             if (epoch + 1) % config.EVAL_INTERVAL == 0:
                 MAP_I2T, MAP_T2I = wxz.performance_eval()
-                log.info('mAP@50 I->T: %.3f, mAP@50 T->I: %.3f' % (MAP_I2T, MAP_T2I))
+
+                log.info(
+                    'mAP@50 I->T: %.3f, mAP@50 T->I: %.3f'
+                    % (MAP_I2T, MAP_T2I)
+                )
 
                 if (best_it + best_ti) < (MAP_I2T + MAP_T2I):
                     best_it, best_ti = MAP_I2T, MAP_T2I
-                    log.info('Best MAP of I->T: %.3f, Best mAP of T->I: %.3f' % (best_it, best_ti))
+
+                    log.info(
+                        'Best MAP of I->T: %.3f, Best mAP of T->I: %.3f'
+                        % (best_it, best_ti)
+                    )
+
                     wxz.save_checkpoints()
 
                 log.info('--------------------------------------------------------------------')
+
+        total_train_time = time.time() - total_train_start
+        log.info("Total training time: %.2f seconds" % total_train_time)
+
     else:
-        ckp = config.DATASET + '_' + str(config.HASH_BIT)+'bits'
+        ckp = config.DATASET + '_' + str(config.HASH_BIT) + 'bits.pth'
         wxz.load_checkpoints(ckp)
         MAP_I2T, MAP_T2I = wxz.performance_eval()
         log.info('mAP@50 I->T: %.3f, mAP@50 T->I: %.3f' % (MAP_I2T, MAP_T2I))
 
 
 if __name__ == '__main__':
+
+    def str2bool(v):
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ("yes", "true", "t", "1", "y"):
+            return True
+        if v.lower() in ("no", "false", "f", "0", "n"):
+            return False
+        raise argparse.ArgumentTypeError("Boolean value expected.")
     parser = argparse.ArgumentParser(description='Ours')
-    parser.add_argument('--TRAIN', default=True, help='train or test', type=bool)
+    parser.add_argument('--TRAIN', default=True, help='train or test', type=str2bool)
     parser.add_argument('--DATASET', default='NUSWIDE', help='MIRFlickr, NUSWIDE or COCO', type=str)
 
     parser.add_argument('--lambda1', default=10, type=float, help='10')
